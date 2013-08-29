@@ -26,14 +26,22 @@ module AfterShip
 
   module V3
     class Tracking < AfterShip::V3::Base
-      def self.create(tracking_number, courier, opt = {})
+      def self.create(tracking_number, opt = {})
+        if tracking_number.empty?
+          raise ArgumentError.new("both tracking_number and courier are necessary for this method call")
+        end
+
+        query_hash = {:tracking_number => tracking_number}
+        query_hash.merge!(opt)
+        call(:post, "trackings", query_hash)
+      end
+
+      def self.update(tracking_number, courier, opt = {})
         if tracking_number.empty? || courier.empty?
           raise ArgumentError.new("both tracking_number and courier are necessary for this method call")
         end
 
-        query_hash = {:tracking_number => tracking_number, :courier => courier}
-        query_hash.merge!(opt)
-        call(:post, "trackings", query_hash)
+        call(:put, "trackings/#{courier}/#{tracking_number}", opt)
       end
 
       def self.get(tracking_number, courier)

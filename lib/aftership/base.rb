@@ -37,11 +37,18 @@ module AfterShip
 
   module V3
     class Base
-      def self.call(http_verb_method, *args)
-        url = "#{AfterShip::URL}/v3/#{args.first.to_s}"
-        headers = {"aftership-api-key" => AfterShip.api_key_v3}
+      def self.call(http_verb_method, resource, params = {})
+        url = "#{AfterShip::URL}/v3/#{resource.to_s}"
+        headers = {'aftership-api-key' => AfterShip.api_key_v3, 'Content-Type' => 'application/json'}
 
         request = HTTPI::Request.new({:url => url, :headers => headers})
+
+        opt = {}
+        params.each {|k, v| v.is_a?(Array) ? opt["#{k}[]"] = v : opt[k] = v}
+
+        if (opt.size > 0)
+          request.body = opt
+        end
 
         response = HTTPI.send(http_verb_method.to_sym, request)
 
