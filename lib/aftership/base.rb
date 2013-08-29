@@ -43,11 +43,8 @@ module AfterShip
 
         request = HTTPI::Request.new({:url => url, :headers => headers})
 
-        opt = {}
-        params.each {|k, v| v.is_a?(Array) ? opt["#{k}[]"] = v : opt[k] = v}
-
-        if (opt.size > 0)
-          request.body = opt
+        if (params.size > 0)
+          request.body = params.to_json
         end
 
         response = HTTPI.send(http_verb_method.to_sym, request)

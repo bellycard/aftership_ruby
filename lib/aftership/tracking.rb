@@ -31,8 +31,9 @@ module AfterShip
           raise ArgumentError.new("both tracking_number and courier are necessary for this method call")
         end
 
-        query_hash = {:tracking_number => tracking_number}
-        query_hash.merge!(opt)
+        query_hash = {'tracking' => {:tracking_number => tracking_number}}
+
+        query_hash['tracking'].merge!(opt)
         call(:post, "trackings", query_hash)
       end
 
@@ -40,8 +41,9 @@ module AfterShip
         if tracking_number.empty? || courier.empty?
           raise ArgumentError.new("both tracking_number and courier are necessary for this method call")
         end
+        query_hash = {'tracking' => opt}
 
-        call(:put, "trackings/#{courier}/#{tracking_number}", opt)
+        call(:put, "trackings/#{courier}/#{tracking_number}", query_hash)
       end
 
       def self.get(tracking_number, courier)
